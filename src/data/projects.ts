@@ -12,6 +12,17 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    slug: "vektorizer",
+    title: "Vektorize: Görüntüden Vektöre Dönüşüm Aracı",
+    category: "Web Sitesi Geliştirme",
+    image: "/vektorize.png",
+    status: "Devam Ediyor",
+    developingSince: "Kasım 2025",
+    description: "Vektorize, kullanıcıların raster görüntüleri (JPEG, PNG) yükleyip bunları ölçeklenebilir vektör grafiklerine (SVG) dönüştürmelerini sağlayan bir web uygulamasıdır.",
+    technologies: ["Next.js", "TypeScript", "Tailwind CSS", "Supabase", "Node.js"],
+    link: "https://vektorize.vercel.app/",
+  },
+  {
     slug: "e-commerce",
     title: "MONO: Modern E-Ticaret Sitesi",
     category: "Web Sitesi Geliştirme",
