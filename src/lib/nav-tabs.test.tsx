@@ -25,5 +25,6 @@ describe("resolveTabs", () => {
   it("falls back to the other language, then the page key", () => {
     const nav = [tab("home", { label: { tr: "Ana" } }), tab("blog", { label: {} })];
     expect(resolveTabs(nav, "en").map((t) => t.label)).toEqual(["Ana", "blog"]);
+    expect(resolveTabs(nav, "en").map((t) => t.lang)).toEqual(["tr", undefined]);
   });
 });

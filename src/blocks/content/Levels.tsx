@@ -2,7 +2,7 @@ import { FallbackBadge } from "@/components/FallbackBadge";
 import { Glass } from "@/components/glass/Glass";
 import type { Skill } from "@/data/types";
 import type { Lang } from "@/lib/i18n";
-import { pickLocalized, type Localized } from "@/lib/localized";
+import { fallbackLang, pickLocalized, type Localized } from "@/lib/localized";
 
 export type LevelsConfig = { title: Localized };
 
@@ -11,7 +11,7 @@ export function Levels(p: { config: LevelsConfig; items: Skill[]; lang: Lang; li
   const title = pickLocalized(p.config.title, p.lang);
   return (
     <Glass as="section" className="p-6 sm:p-8">
-      <h2 className="text-xl font-bold">{title.text}</h2>
+      <h2 lang={fallbackLang(title)} className="text-xl font-bold">{title.text}</h2>
       <FallbackBadge from={title.fallbackFrom} lang={p.lang} />
       <ul className={`mt-6 ${p.listClass}`}>
         {p.items.map((s) => {
@@ -20,8 +20,12 @@ export function Levels(p: { config: LevelsConfig; items: Skill[]; lang: Lang; li
           return (
             <li key={s.id}>
               <div className="mb-2 flex items-end justify-between gap-3">
-                <span className="font-medium">{name.text}</span>
-                <span className="text-right text-sm text-fg-muted">{level.text}</span>
+                <span lang={fallbackLang(name)} className="font-medium">
+                  {name.text}
+                </span>
+                <span lang={fallbackLang(level)} className="text-right text-sm text-fg-muted">
+                  {level.text}
+                </span>
               </div>
               {/* The level text carries the meaning; the bar is decoration. */}
               <div aria-hidden className="h-2 w-full overflow-hidden rounded-full bg-black/10 dark:bg-white/15">

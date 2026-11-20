@@ -53,6 +53,16 @@ describe("project page", () => {
     expect(html).not.toContain("Source code");
   });
 
+  it("marks fallback text with its language and badges the header once", async () => {
+    found.value = project({ category: { tr: "Araç" }, title: { tr: "Demo TR" }, summary: { tr: "Özet" } });
+    const html = await render();
+    expect(html).toMatch(/<h1 lang="tr"[^>]*>Demo TR<\/h1>/);
+    expect(html).toMatch(/<p lang="tr"[^>]*>Araç<\/p>/);
+    expect(html).toMatch(/<p lang="tr"[^>]*>Özet<\/p>/);
+    expect(html.match(/Only available in Turkish/g)).toHaveLength(1);
+    expect(html).not.toMatch(/<img[^>]*lang=/);
+  });
+
   it("404s when the project is missing or unpublished", async () => {
     found.value = null;
     await expect(render()).rejects.toThrow();

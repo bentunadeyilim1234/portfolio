@@ -7,7 +7,7 @@ import { projectCover } from "@/data/project-cover";
 import type { ProjectWithImages } from "@/data/types";
 import { dict } from "@/lib/dictionaries";
 import type { Lang } from "@/lib/i18n";
-import { pickLocalized } from "@/lib/localized";
+import { fallbackLang, pickLocalized } from "@/lib/localized";
 import type { BlockSize } from "../types";
 
 export type ProjectConfig = { projectId: string };
@@ -66,7 +66,9 @@ export function ProjectCard({ project, size, lang }: { project: ProjectWithImage
         {size === "small" ? (
           // Scrim + dark badge chip keep title and badge readable on any cover at ~170px.
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent p-3 pt-10">
-            <h2 className="line-clamp-2 text-[15px] font-semibold leading-snug text-white">{title.text}</h2>
+            <h2 lang={fallbackLang(title)} className="line-clamp-2 text-[15px] font-semibold leading-snug text-white">
+              {title.text}
+            </h2>
             <FallbackBadge from={title.fallbackFrom} lang={lang} className="mt-1 bg-black/55 text-white" />
           </div>
         ) : (
@@ -76,7 +78,9 @@ export function ProjectCard({ project, size, lang }: { project: ProjectWithImage
             <span className="shrink-0 rounded-full bg-[var(--glass-hover)] px-2.5 py-0.5 text-xs font-medium text-fg-muted ring-1 ring-inset ring-white/40 dark:ring-white/15">
               {dict(lang).projects.status[project.status]}
             </span>
-            <h2 className={`${size === "full" ? "" : "line-clamp-2"} shrink-0 text-base font-semibold leading-snug tracking-tight sm:text-xl`}>
+            <h2
+              lang={fallbackLang(title)}
+              className={`${size === "full" ? "" : "line-clamp-2"} shrink-0 text-base font-semibold leading-snug tracking-tight sm:text-xl`}>
               {title.text}
             </h2>
             <FallbackBadge from={title.fallbackFrom} lang={lang} className="shrink-0" />
@@ -88,6 +92,7 @@ export function ProjectCard({ project, size, lang }: { project: ProjectWithImage
                   <FallbackBadge from={summary.fallbackFrom} lang={lang} className="shrink-0" />
                 )}
                 <p
+                  lang={fallbackLang(summary)}
                   className={`min-h-0 text-sm leading-relaxed text-fg-muted ${size === "full" ? "" : "line-clamp-2 sm:line-clamp-3"}`}
                 >
                   {summary.text}

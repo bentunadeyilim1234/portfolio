@@ -5,7 +5,7 @@ import { Glass } from "@/components/glass/Glass";
 import type { PostSummary } from "@/data/types";
 import { dict } from "@/lib/dictionaries";
 import type { Lang } from "@/lib/i18n";
-import { pickLocalized } from "@/lib/localized";
+import { fallbackLang, pickLocalized } from "@/lib/localized";
 
 export type PostListConfig = { limit?: number };
 
@@ -18,7 +18,7 @@ export function PostList({ posts, lang }: { posts: PostSummary[]; lang: Lang }) 
       </Glass>
     );
   }
-  const date = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
+  const date = new Intl.DateTimeFormat(lang, { dateStyle: "medium", timeZone: "UTC" });
   return (
     <ul className="grid gap-4 sm:grid-cols-2">
       {posts.map((p) => {
@@ -49,9 +49,9 @@ export function PostList({ posts, lang }: { posts: PostSummary[]; lang: Lang }) 
                       {date.format(p.publishedAt)}
                     </time>
                   )}
-                  <h2 className="text-lg font-semibold leading-snug tracking-tight">{title.text}</h2>
+                  <h2 lang={fallbackLang(title)} className="text-lg font-semibold leading-snug tracking-tight">{title.text}</h2>
                   <FallbackBadge from={title.fallbackFrom} lang={lang} />
-                  {excerpt.text && <p className="line-clamp-3 text-sm leading-relaxed text-fg-muted">{excerpt.text}</p>}
+                  {excerpt.text && <p lang={fallbackLang(excerpt)} className="line-clamp-3 text-sm leading-relaxed text-fg-muted">{excerpt.text}</p>}
                   <FallbackBadge from={excerpt.fallbackFrom} lang={lang} />
                   <span aria-hidden className="mt-auto pt-2 text-sm font-medium">
                     {t.blog.readMore} &rarr;

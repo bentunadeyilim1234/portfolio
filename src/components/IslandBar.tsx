@@ -13,7 +13,8 @@ import { activePage, pageHref } from "@/lib/nav";
 import { pillMap } from "@/lib/refract-map";
 
 // The icon arrives pre-rendered from the server so lucide's full icon index stays out of the client bundle.
-export type IslandTab = { page: PageKey; label: string; icon: ReactNode };
+// lang: set when the label fell back to the other language.
+export type IslandTab = { page: PageKey; label: string; lang?: Lang; icon: ReactNode };
 
 const RIM_PX = 18;
 const SQUISH: Keyframe[] = [{ scale: "1 1" }, { scale: "1.14 0.86", offset: 0.35 }, { scale: "0.97 1.04", offset: 0.7 }, { scale: "1 1" }];
@@ -106,6 +107,7 @@ export function IslandBar({ tabs, lang, label }: { tabs: IslandTab[]; lang: Lang
                   <li key={t.page}>
                     <Link
                       href={pageHref(t.page)}
+                      lang={t.lang}
                       aria-label={t.label}
                       aria-current={t.page === active ? "page" : undefined}
                       className="relative flex h-11 min-w-11 items-center justify-center gap-2 rounded-full px-3 text-sm font-medium text-fg-muted transition-colors hover:text-fg focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-current aria-[current=page]:text-fg lg:px-4"

@@ -14,3 +14,8 @@ export function pickLocalized(
   if (alt) return { text: alt, fallbackFrom: other };
   return { text: "", fallbackFrom: null };
 }
+
+// `lang` attribute for an element showing picked text: only set when the text came from the other language (WCAG 3.1.2).
+export function fallbackLang(p: { fallbackFrom: Lang | null }): Lang | undefined {
+  return p.fallbackFrom ?? undefined;
+}

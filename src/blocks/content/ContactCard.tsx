@@ -3,7 +3,7 @@ import { FallbackBadge } from "@/components/FallbackBadge";
 import { Glass } from "@/components/glass/Glass";
 import { dict } from "@/lib/dictionaries";
 import type { Lang } from "@/lib/i18n";
-import { pickLocalized, type Localized } from "@/lib/localized";
+import { fallbackLang, pickLocalized, type Localized } from "@/lib/localized";
 
 export type ContactConfig = { title: Localized };
 
@@ -11,7 +11,7 @@ export function ContactCard({ config, email, lang }: { config: ContactConfig; em
   const title = pickLocalized(config.title, lang);
   return (
     <Glass as="section" className="flex flex-col items-start gap-4 p-6 sm:p-8">
-      <h2 className="text-2xl font-semibold tracking-tight">{title.text}</h2>
+      <h2 lang={fallbackLang(title)} className="text-2xl font-semibold tracking-tight">{title.text}</h2>
       <FallbackBadge from={title.fallbackFrom} lang={lang} />
       <p className="break-all text-fg-muted">{email}</p>
       <a

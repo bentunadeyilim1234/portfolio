@@ -2,7 +2,7 @@ import { Circle, icons } from "lucide-react";
 import type { IslandTab } from "@/components/IslandBar";
 import type { NavTab } from "@/data/types";
 import type { Lang } from "./i18n";
-import { pickLocalized } from "./localized";
+import { fallbackLang, pickLocalized } from "./localized";
 import { isPageKey } from "./nav";
 
 // Server-only: `icons` is lucide's full index. hasOwn keeps names like "constructor" off the prototype.
@@ -20,5 +20,8 @@ export function resolveTabs(nav: NavTab[], lang: Lang): IslandTab[] {
       seen.add(t.page);
       return true;
     })
-    .map((t) => ({ page: t.page, label: pickLocalized(t.label, lang).text || t.page, icon: navIcon(t.icon) }));
+    .map((t) => {
+      const label = pickLocalized(t.label, lang);
+      return { page: t.page, label: label.text || t.page, lang: fallbackLang(label), icon: navIcon(t.icon) };
+    });
 }

@@ -9,7 +9,7 @@ import { Markdown } from "@/components/Markdown";
 import { getPostBySlug, getPublishedPosts } from "@/data/queries";
 import { dict } from "@/lib/dictionaries";
 import { LANGS } from "@/lib/i18n";
-import { pickLocalized } from "@/lib/localized";
+import { fallbackLang, pickLocalized } from "@/lib/localized";
 import { routeParams } from "@/lib/route-params";
 
 type Props = { params: Promise<{ lang: string; slug: string }> };
@@ -73,12 +73,14 @@ export default async function PostPage({ params }: Props) {
                 {new Intl.DateTimeFormat(lang, { dateStyle: "long", timeZone: "UTC" }).format(post.publishedAt)}
               </time>
             )}
-            <h1 className="text-3xl font-semibold leading-tight tracking-tight text-balance sm:text-4xl">{title.text}</h1>
+            <h1 lang={fallbackLang(title)} className="text-3xl font-semibold leading-tight tracking-tight text-balance sm:text-4xl">{title.text}</h1>
             <FallbackBadge from={title.fallbackFrom} lang={lang} />
             {body.text && (
               <div className="mt-4 w-full">
                 <FallbackBadge from={body.fallbackFrom} lang={lang} className="mb-4" />
-                <Markdown source={body.text} />
+                <div lang={fallbackLang(body)}>
+                  <Markdown source={body.text} />
+                </div>
               </div>
             )}
           </div>

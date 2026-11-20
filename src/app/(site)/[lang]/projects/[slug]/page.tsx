@@ -11,7 +11,7 @@ import { getProjectBySlug, getPublishedProjects } from "@/data/queries";
 import { dict } from "@/lib/dictionaries";
 import { formatMonth } from "@/lib/format-month";
 import { LANGS } from "@/lib/i18n";
-import { pickLocalized } from "@/lib/localized";
+import { fallbackLang, pickLocalized } from "@/lib/localized";
 import { routeParams } from "@/lib/route-params";
 
 type Props = { params: Promise<{ lang: string; slug: string }> };
@@ -51,7 +51,7 @@ export default async function ProjectPage({ params }: Props) {
   const summary = pickLocalized(project.summary, lang);
   const body = pickLocalized(project.body, lang);
   const cover = projectCover(project);
-  const coverAlt = pickLocalized(project.images.find((i) => i.url === cover)?.alt, lang).text;
+  const coverAlt = pickLocalized(project.images.find((i) => i.url === cover)?.alt, lang);
   const gallery = project.images.filter((i) => i.url !== cover);
   const since = project.startedAt ? formatMonth(project.startedAt, lang) : null;
   const site = httpUrl(project.link);
@@ -74,7 +74,8 @@ export default async function ProjectPage({ params }: Props) {
               {/* Container is max-w-6xl minus the px-4 gutters. */}
               <Image
                 src={cover}
-                alt={coverAlt}
+                alt={coverAlt.text}
+                lang={fallbackLang(coverAlt)}
                 fill
                 preload
                 sizes="(min-width: 1152px) 1120px, calc(100vw - 2rem)"
@@ -87,12 +88,29 @@ export default async function ProjectPage({ params }: Props) {
             </div>
           )}
           <div className="flex flex-col items-start gap-2 p-6 sm:p-10">
-            {category.text && <p className="text-sm font-medium text-fg-muted">{category.text}</p>}
+            {category.text && (
+              <p lang={fallbackLang(category)} className="text-sm font-medium text-fg-muted">
+                {category.text}
+              </p>
+            )}
+            {/* One badge per fallback language in this group: later items skip a language already badged. */}
             <FallbackBadge from={category.fallbackFrom} lang={lang} />
-            <h1 className="text-4xl font-semibold leading-tight tracking-tight text-balance sm:text-5xl">{title.text}</h1>
-            <FallbackBadge from={title.fallbackFrom} lang={lang} />
-            {summary.text && <p className="mt-2 max-w-3xl text-lg leading-relaxed text-fg-muted text-pretty">{summary.text}</p>}
-            <FallbackBadge from={summary.fallbackFrom} lang={lang} />
+            <h1
+              lang={fallbackLang(title)}
+              className="text-4xl font-semibold leading-tight tracking-tight text-balance sm:text-5xl"
+            >
+              {title.text}
+            </h1>
+            <FallbackBadge from={title.fallbackFrom === category.fallbackFrom ? null : title.fallbackFrom} lang={lang} />
+            {summary.text && (
+              <p lang={fallbackLang(summary)} className="mt-2 max-w-3xl text-lg leading-relaxed text-fg-muted text-pretty">
+                {summary.text}
+              </p>
+            )}
+            <FallbackBadge
+              from={[category.fallbackFrom, title.fallbackFrom].includes(summary.fallbackFrom) ? null : summary.fallbackFrom}
+              lang={lang}
+            />
           </div>
         </Glass>
 
@@ -106,24 +124,30 @@ export default async function ProjectPage({ params }: Props) {
                 tabIndex={0}
                 className={`-mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-4 ${FOCUS}`}
               >
-                {gallery.map((img) => (
-                  <Glass key={img.id} className="relative h-48 w-72 shrink-0 snap-start overflow-hidden sm:h-64 sm:w-96">
-                    <Image
-                      src={img.url}
-                      alt={pickLocalized(img.alt, lang).text}
-                      fill
-                      sizes="(min-width: 640px) 384px, 288px"
-                      className="object-cover"
-                    />
-                  </Glass>
-                ))}
+                {gallery.map((img) => {
+                  const alt = pickLocalized(img.alt, lang);
+                  return (
+                    <Glass key={img.id} className="relative h-48 w-72 shrink-0 snap-start overflow-hidden sm:h-64 sm:w-96">
+                      <Image
+                        src={img.url}
+                        alt={alt.text}
+                        lang={fallbackLang(alt)}
+                        fill
+                        sizes="(min-width: 640px) 384px, 288px"
+                        className="object-cover"
+                      />
+                    </Glass>
+                  );
+                })}
               </div>
             )}
 
             {body.text && (
               <Glass as="section" className="p-6 sm:p-8">
                 <FallbackBadge from={body.fallbackFrom} lang={lang} className="mb-4" />
-                <Markdown source={body.text} />
+                <div lang={fallbackLang(body)}>
+                  <Markdown source={body.text} />
+                </div>
               </Glass>
             )}
           </div>

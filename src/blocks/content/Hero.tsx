@@ -2,7 +2,7 @@ import Link from "next/link";
 import { FallbackBadge } from "@/components/FallbackBadge";
 import { Glass } from "@/components/glass/Glass";
 import type { Lang } from "@/lib/i18n";
-import { pickLocalized, type Localized } from "@/lib/localized";
+import { fallbackLang, pickLocalized, type Localized } from "@/lib/localized";
 import { pageHref } from "@/lib/nav";
 import type { PageKey } from "../types";
 
@@ -17,13 +17,13 @@ export function Hero({ config, lang }: { config: HeroConfig; lang: Lang }) {
   const ctas = Array.isArray(config.ctas) ? config.ctas.filter((c) => typeof c?.page === "string") : [];
   return (
     <Glass as="section" className="px-6 py-12 sm:px-12 sm:py-16 lg:py-20">
-      <h1 className="text-5xl font-semibold leading-[0.95] tracking-tight text-balance sm:text-6xl lg:text-7xl">
+      <h1 lang={fallbackLang(title)} className="text-5xl font-semibold leading-[0.95] tracking-tight text-balance sm:text-6xl lg:text-7xl">
         {title.text}
       </h1>
       <FallbackBadge from={title.fallbackFrom} lang={lang} />
       {tagline.text && (
         <p className="mt-5 max-w-2xl text-lg leading-relaxed text-fg-muted text-pretty sm:text-xl">
-          {tagline.text} <FallbackBadge from={tagline.fallbackFrom} lang={lang} />
+          <span lang={fallbackLang(tagline)}>{tagline.text}</span> <FallbackBadge from={tagline.fallbackFrom} lang={lang} />
         </p>
       )}
       {ctas.length > 0 && (
@@ -34,6 +34,7 @@ export function Hero({ config, lang }: { config: HeroConfig; lang: Lang }) {
               <li key={i} className="flex items-center gap-2">
                 <Link
                   href={pageHref(c.page)}
+                  lang={fallbackLang(label)}
                   className={`inline-flex rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${FOCUS} ${
                     // First CTA is the primary action: solid, inverted.
                     i === 0
