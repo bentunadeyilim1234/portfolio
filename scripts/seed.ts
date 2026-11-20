@@ -101,7 +101,8 @@ async function main() {
     log("settings", rows.length);
   } else log("settings", null);
 
-  // Projects + their images, in one transaction.
+  // Projects + their images, in one transaction. The PNGs left public/ after the first seed:
+  // a fresh DB needs them back from git (`git checkout 9d4e1dc -- public/<file>`).
   if (await isEmpty(projects)) {
     const projectRows = [];
     const imageRows = [];
