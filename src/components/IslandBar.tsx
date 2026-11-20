@@ -22,28 +22,34 @@ export function IslandBar({ tabs, lang, label }: { tabs: IslandTab[]; lang: Lang
   const active = activePage(usePathname());
   const barRef = useRef<HTMLElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
-  const dropRef = useRef<HTMLSpanElement>(null);
+  const squishRef = useRef<HTMLSpanElement>(null);
   const lastPage = useRef<string | null>(null);
   const [drop, setDrop] = useState<{ x: number; w: number; slide: boolean } | null>(null);
   const [map, setMap] = useState<string | null>(null);
 
   // Droplet follows the active tab's box. It slides only when the active tab changes; resizes snap.
+  // `tabs` is a dependency so a reorder from the server re-measures even when the page is the same.
   useEffect(() => {
     const list = listRef.current;
+    const scroller = list?.parentElement;
     const el = list?.querySelector<HTMLElement>('[aria-current="page"]');
-    if (!list || !el) return;
+    if (!list || !scroller || !el) return;
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const ro = new ResizeObserver(() => {
       const slide = lastPage.current !== null && lastPage.current !== active;
       lastPage.current = active;
       setDrop({ x: el.offsetLeft, w: el.offsetWidth, slide });
-      if (slide && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        dropRef.current?.animate(SQUISH, { duration: 560, easing: "ease-out" });
-      }
+      // When the tabs overflow and scroll, keep the active one centred in view.
+      const left = el.offsetLeft - (scroller.clientWidth - el.offsetWidth) / 2;
+      scroller.scrollTo({ left, behavior: slide && !reduce ? "smooth" : "auto" });
+      // On the inner span: `scale` on the translated span would scale its translation too and drift it sideways.
+      if (slide && !reduce) squishRef.current?.animate(SQUISH, { duration: 560, easing: "ease-out" });
     });
     ro.observe(list);
     ro.observe(el);
+    ro.observe(scroller);
     return () => ro.disconnect();
-  }, [active]);
+  }, [active, tabs]);
 
   // Refract tier: a displacement map drawn at the bar's exact px size, so the rim band stays a fixed
   // width and bends radially around the round ends instead of stretching with the pill.
@@ -84,14 +90,17 @@ export function IslandBar({ tabs, lang, label }: { tabs: IslandTab[]; lang: Lang
       >
         {tabs.length > 0 && (
           <>
-            <div className="relative">
+            {/* Scrolls sideways when the tabs don't fit; the negative margin + padding give the droplet's
+                shadow room inside the clip without changing the bar's size. */}
+            <div className="relative -my-1 -ml-1 min-w-0 overflow-x-auto py-1 pl-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               <span
-                ref={dropRef}
                 aria-hidden="true"
                 data-slide={drop?.slide || undefined}
                 className="glass-drop"
                 style={{ transform: `translateX(${drop?.x ?? 0}px)`, width: drop?.w ?? 0, opacity: drop && hasActiveTab ? 1 : 0 }}
-              />
+              >
+                <span ref={squishRef} className="glass-drop-fill" />
+              </span>
               <ul ref={listRef} className="flex items-center">
                 {tabs.map((t) => (
                   <li key={t.page}>
@@ -99,20 +108,20 @@ export function IslandBar({ tabs, lang, label }: { tabs: IslandTab[]; lang: Lang
                       href={pageHref(t.page)}
                       aria-label={t.label}
                       aria-current={t.page === active ? "page" : undefined}
-                      className="relative flex h-11 min-w-11 items-center justify-center gap-2 rounded-full px-3 text-sm font-medium text-fg-muted transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current aria-[current=page]:text-fg md:px-4"
+                      className="relative flex h-11 min-w-11 items-center justify-center gap-2 rounded-full px-3 text-sm font-medium text-fg-muted transition-colors hover:text-fg focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-current aria-[current=page]:text-fg lg:px-4"
                     >
                       {t.icon}
-                      <span className="hidden md:inline">{t.label}</span>
+                      <span className="hidden whitespace-nowrap lg:inline">{t.label}</span>
                     </Link>
                   </li>
                 ))}
               </ul>
             </div>
-            <span aria-hidden="true" className="mx-1 h-6 w-px bg-current opacity-15" />
+            <span aria-hidden="true" className="mx-1 h-6 w-px shrink-0 bg-current opacity-15" />
           </>
         )}
         {/* Right-side controls: Plan 2 adds Edit, Plan 6 the coffee button. */}
-        <div className="flex items-center">
+        <div className="flex shrink-0 items-center">
           <LangToggle lang={lang} />
           <ThemeToggle lang={lang} />
         </div>
