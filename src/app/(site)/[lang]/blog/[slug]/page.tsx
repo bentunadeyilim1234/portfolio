@@ -14,7 +14,7 @@ import { routeParams } from "@/lib/route-params";
 
 type Props = { params: Promise<{ lang: string; slug: string }> };
 
-// Layout sets false for [lang]; posts published after the build render on demand.
+// Posts published after the build render on demand.
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
@@ -70,7 +70,7 @@ export default async function PostPage({ params }: Props) {
           <div className="flex flex-col items-start gap-2 p-6 sm:p-10">
             {post.publishedAt && (
               <time dateTime={post.publishedAt.toISOString()} className="text-sm text-fg-muted">
-                {new Intl.DateTimeFormat(lang, { dateStyle: "long" }).format(post.publishedAt)}
+                {new Intl.DateTimeFormat(lang, { dateStyle: "long", timeZone: "UTC" }).format(post.publishedAt)}
               </time>
             )}
             <h1 className="text-3xl font-semibold leading-tight tracking-tight text-balance sm:text-4xl">{title.text}</h1>

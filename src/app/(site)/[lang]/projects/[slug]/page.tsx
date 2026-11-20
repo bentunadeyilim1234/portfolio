@@ -16,7 +16,7 @@ import { routeParams } from "@/lib/route-params";
 
 type Props = { params: Promise<{ lang: string; slug: string }> };
 
-// Layout sets false for [lang]; projects published after the build render on demand.
+// Projects published after the build render on demand.
 export const dynamicParams = true;
 
 export async function generateStaticParams() {

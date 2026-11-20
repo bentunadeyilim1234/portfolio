@@ -20,7 +20,8 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin",
 // Pages set a plain title; the template appends the site name.
 export const metadata: Metadata = { title: { default: "Ali Tuna Baylan", template: "%s — Ali Tuna Baylan" } };
 
-export const dynamicParams = false;
+// Scheduled posts and cached notFounds on [slug] routes refresh within the hour.
+export const revalidate = 3600;
 
 export function generateStaticParams() {
   return LANGS.map((lang) => ({ lang }));
