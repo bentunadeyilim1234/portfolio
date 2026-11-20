@@ -18,7 +18,13 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin", "lat
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin", "latin-ext"] });
 
 // Pages set a plain title; the template appends the site name.
-export const metadata: Metadata = { title: { default: "Ali Tuna Baylan", template: "%s — Ali Tuna Baylan" } };
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+  const { lang } = await params;
+  return {
+    title: { default: "Ali Tuna Baylan", template: "%s — Ali Tuna Baylan" },
+    description: dict(isLang(lang) ? lang : "en").meta.description,
+  };
+}
 
 // Scheduled posts and cached notFounds on [slug] routes refresh within the hour.
 export const revalidate = 3600;

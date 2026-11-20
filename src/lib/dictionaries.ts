@@ -1,8 +1,9 @@
 import type { Lang } from "./i18n";
 
 const en = {
+  meta: { description: "Welcome to my portfolio: my projects, writing and how to reach me." },
   onlyIn: { tr: "Only available in Turkish", en: "Only available in English" },
-  nav: { main: "Main", lang: "Language", theme: "Theme" },
+  nav: { main: "Main", switchLang: "Switch language to Türkçe", theme: "Theme" },
   theme: { system: "System", light: "Light", dark: "Dark" },
   pages: { projects: "Projects", blog: "Blog", about: "About", contact: "Contact" },
   projects: {
@@ -23,8 +24,9 @@ const en = {
 
 // Typed as the EN shape so a missing or extra key fails tsc.
 const tr: typeof en = {
+  meta: { description: "Portfolyoma hoş geldiniz: projelerim, yazılarım ve bana nasıl ulaşabileceğiniz." },
   onlyIn: { tr: "Yalnızca Türkçe mevcut", en: "Yalnızca İngilizce mevcut" },
-  nav: { main: "Ana menü", lang: "Dil", theme: "Tema" },
+  nav: { main: "Ana menü", switchLang: "Dili English olarak değiştir", theme: "Tema" },
   theme: { system: "Sistem", light: "Açık", dark: "Koyu" },
   pages: { projects: "Projeler", blog: "Blog", about: "Hakkımda", contact: "İletişim" },
   projects: {
