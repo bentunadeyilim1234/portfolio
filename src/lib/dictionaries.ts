@@ -3,6 +3,7 @@ import type { Lang } from "./i18n";
 const en = {
   onlyIn: { tr: "Only available in Turkish", en: "Only available in English" },
   nav: { lang: "Language", theme: "Theme" },
+  theme: { system: "System", light: "Light", dark: "Dark" },
   projects: {
     status: { completed: "Completed", in_progress: "In progress", archived: "Archived" },
     visit: "Visit site",
@@ -20,6 +21,7 @@ const en = {
 const tr: typeof en = {
   onlyIn: { tr: "Yalnızca Türkçe mevcut", en: "Yalnızca İngilizce mevcut" },
   nav: { lang: "Dil", theme: "Tema" },
+  theme: { system: "Sistem", light: "Açık", dark: "Koyu" },
   projects: {
     status: { completed: "Tamamlandı", in_progress: "Devam ediyor", archived: "Arşivlendi" },
     visit: "Siteyi ziyaret et",
