@@ -12,7 +12,7 @@ export function sizeClass(s: BlockSize): string {
     case "small":
       return "col-span-1 row-span-1 aspect-square";
     case "medium":
-      return "col-span-2 row-span-1";
+      return "col-span-2 row-span-1 h-[var(--cell)]";
     case "large":
       return "col-span-2 row-span-2 aspect-square";
     case "full":

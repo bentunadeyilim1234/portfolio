@@ -11,3 +11,10 @@ describe("grid sizing", () => {
     expect(sizeClass("full")).toBe("col-span-full");
   });
 });
+
+describe("row sizing", () => {
+  // Rows are content-sized (no min row height), so medium pins its own one-cell height.
+  it("medium has an explicit one-cell height", () => {
+    expect(sizeClass("medium")).toContain("h-[var(--cell)]");
+  });
+});

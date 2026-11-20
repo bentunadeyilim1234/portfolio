@@ -8,6 +8,7 @@ import { glassTierScript } from "@/lib/glass-tier";
 import { LANGS, isLang } from "@/lib/i18n";
 import "../../globals.css";
 import "@/components/glass/glass.css";
+import "@/components/markdown.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin", "latin-ext"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin", "latin-ext"] });

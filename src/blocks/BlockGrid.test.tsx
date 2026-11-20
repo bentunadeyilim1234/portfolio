@@ -22,6 +22,9 @@ describe("BlockGrid", () => {
     expect(out).toContain("col-span-1 row-span-1 aspect-square"); // project keeps its size
     expect(out).toContain("col-span-full"); // markdown is forced to full
   });
+  it("sizes rows to content, not to a minimum cell height", () => {
+    expect(html([b("a", 1, "markdown")])).not.toContain("minmax");
+  });
   it("renders nothing, wrapper included, for unknown or empty blocks", () => {
     const out = html([b("x", 1, "gone-widget"), b("y", 2, "constructor"), b("z", 3, "hero")]);
     expect(out).not.toContain("col-span");
