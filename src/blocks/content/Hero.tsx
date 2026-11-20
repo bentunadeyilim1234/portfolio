@@ -12,6 +12,8 @@ const FOCUS = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
 export function Hero({ config, lang }: { config: HeroConfig; lang: Lang }) {
   const title = pickLocalized(config.title, lang);
   const tagline = pickLocalized(config.tagline, lang);
+  // Admin-written JSON: tolerate a non-array or null/page-less items instead of crashing the page.
+  const ctas = Array.isArray(config.ctas) ? config.ctas.filter((c) => typeof c?.page === "string") : [];
   return (
     <Glass as="section" className="px-6 py-12 sm:px-12 sm:py-16 lg:py-20">
       <h1 className="text-5xl font-semibold leading-[0.95] tracking-tight text-balance sm:text-6xl lg:text-7xl">
@@ -23,12 +25,12 @@ export function Hero({ config, lang }: { config: HeroConfig; lang: Lang }) {
           {tagline.text} <FallbackBadge from={tagline.fallbackFrom} lang={lang} />
         </p>
       )}
-      {!!config.ctas?.length && (
+      {ctas.length > 0 && (
         <ul className="mt-8 flex flex-wrap gap-3">
-          {config.ctas.map((c, i) => {
+          {ctas.map((c, i) => {
             const label = pickLocalized(c.label, lang);
             return (
-              <li key={c.page} className="flex items-center gap-2">
+              <li key={i} className="flex items-center gap-2">
                 <Link
                   href={c.page === "home" ? "/" : `/${c.page}`}
                   className={`inline-flex rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${FOCUS} ${

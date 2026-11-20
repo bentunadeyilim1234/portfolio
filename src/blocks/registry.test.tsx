@@ -76,6 +76,20 @@ describe("registry", () => {
     expect(out).toContain('href="/projects"');
   });
 
+  it("hero: survives a non-array ctas and skips null / page-less items", () => {
+    const hero = (ctas: unknown) => html(block("hero", { title: { en: "Ali" }, tagline: {}, ctas }));
+    expect(hero("oops")).not.toContain("<a");
+    const out = hero([null, { label: { en: "x" } }, { label: { en: "Blog" }, page: "blog" }]);
+    expect(out.match(/<a /g)).toHaveLength(1);
+    expect(out).toContain('href="/blog"');
+  });
+
+  it("project: cover image is decorative (alt empty), link named by the title", () => {
+    const p = project({ coverImageId: "i", images: [{ id: "i", url: "/c.png", position: 0 } as never] });
+    const out = html(block("project", { projectId: "p1" }, "large"), ctx({ projects: new Map([["p1", p]]) }));
+    expect(out).toContain('alt=""');
+  });
+
   it("post-list: empty message, and limit is applied", () => {
     expect(html(block("post-list", {}))).toContain("No posts yet.");
     const post = (id: string) => ({ id, slug: id, title: { en: id }, excerpt: {}, coverUrl: null, publishedAt: null });

@@ -11,8 +11,12 @@ export async function getPageBlocks(page: PageKey): Promise<Block[]> {
     .from(blocks)
     .where(eq(blocks.page, page))
     .orderBy(asc(position));
-  // type/size are free text in the DB; BlockGrid drops unknown types.
-  return rows as Block[];
+  // type/size are free text in the DB; BlockGrid drops unknown types. config is jsonb: renderers
+  // read fields off it, so anything but an object (null, array, string) becomes {}.
+  return rows.map((r) => ({
+    ...r,
+    config: r.config && typeof r.config === "object" && !Array.isArray(r.config) ? r.config : {},
+  })) as Block[];
 }
 
 const DEFAULT_SETTINGS: SiteSettings = { nav: [], email: "", ownerName: "", socials: [] };

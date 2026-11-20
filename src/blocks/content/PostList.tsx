@@ -31,11 +31,12 @@ export function PostList({ posts, lang }: { posts: PostSummary[]; lang: Lang }) 
                 href={`/blog/${p.slug}`}
                 className="flex h-full flex-col rounded-[inherit] focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-fg"
               >
+                {/* alt="": decorative, the link is already named by the title. */}
                 {p.coverUrl && (
                   <div className="relative aspect-[16/9] overflow-hidden">
                     <Image
                       src={p.coverUrl}
-                      alt={title.text}
+                      alt=""
                       fill
                       sizes="(min-width: 640px) 50vw, 100vw"
                       className="object-cover transition-transform duration-700 group-hover:scale-105"

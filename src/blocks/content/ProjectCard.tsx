@@ -31,7 +31,7 @@ const ROOT: Record<BlockSize, string> = {
 const COVER: Record<BlockSize, string> = {
   small: "absolute inset-0",
   medium: "relative aspect-square h-full shrink-0",
-  large: "relative h-3/5 shrink-0",
+  large: "relative h-1/2 shrink-0 sm:h-3/5",
   full: "relative min-h-40 w-2/5 shrink-0 sm:min-h-56",
 };
 
@@ -47,10 +47,11 @@ export function ProjectCard({ project, size, lang }: { project: ProjectWithImage
         className={`${ROOT[size]} relative rounded-[inherit] focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-fg`}
       >
         <div className={`${COVER[size]} overflow-hidden`}>
+          {/* alt="": decorative, the link is already named by the title. */}
           {cover ? (
             <Image
               src={cover}
-              alt={title.text}
+              alt=""
               fill
               sizes={SIZES[size]}
               className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -63,24 +64,36 @@ export function ProjectCard({ project, size, lang }: { project: ProjectWithImage
         </div>
 
         {size === "small" ? (
-          // Scrim keeps the title readable on any cover at ~170px.
-          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/45 to-transparent p-3 pt-10">
+          // Scrim + dark badge chip keep title and badge readable on any cover at ~170px.
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent p-3 pt-10">
             <h2 className="line-clamp-2 text-[15px] font-semibold leading-snug text-white">{title.text}</h2>
-            <FallbackBadge from={title.fallbackFrom} lang={lang} />
+            <FallbackBadge from={title.fallbackFrom} lang={lang} className="mt-1 bg-black/55 text-white" />
           </div>
         ) : (
-          <div className="flex min-w-0 flex-1 flex-col items-start gap-2 p-5">
-            <span className="rounded-full bg-[var(--glass-hover)] px-2.5 py-0.5 text-xs font-medium text-fg-muted ring-1 ring-inset ring-white/40 dark:ring-white/15">
+          // Fixed-height cells: everything above the summary is shrink-0 and the summary goes last,
+          // so overflow only ever trims summary lines, never a title or its fallback badge.
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col items-start gap-1.5 overflow-hidden p-3 sm:gap-2 sm:p-5">
+            <span className="shrink-0 rounded-full bg-[var(--glass-hover)] px-2.5 py-0.5 text-xs font-medium text-fg-muted ring-1 ring-inset ring-white/40 dark:ring-white/15">
               {dict(lang).projects.status[project.status]}
             </span>
-            <h2 className="text-lg font-semibold leading-snug tracking-tight sm:text-xl">{title.text}</h2>
-            <FallbackBadge from={title.fallbackFrom} lang={lang} />
+            <h2 className={`${size === "full" ? "" : "line-clamp-2"} shrink-0 text-base font-semibold leading-snug tracking-tight sm:text-xl`}>
+              {title.text}
+            </h2>
+            <FallbackBadge from={title.fallbackFrom} lang={lang} className="shrink-0" />
             {summary.text && (
-              <p className={`text-sm leading-relaxed text-fg-muted ${size === "full" ? "" : "line-clamp-3"}`}>
-                {summary.text}
-              </p>
+              // Medium on phones has no room for a summary; its badge goes with it.
+              <div className={`min-h-0 flex-col items-start gap-1.5 sm:gap-2 ${size === "medium" ? "hidden sm:flex" : "flex"}`}>
+                {/* Same source language as the title: the title's badge already says it. */}
+                {summary.fallbackFrom !== title.fallbackFrom && (
+                  <FallbackBadge from={summary.fallbackFrom} lang={lang} className="shrink-0" />
+                )}
+                <p
+                  className={`min-h-0 text-sm leading-relaxed text-fg-muted ${size === "full" ? "" : "line-clamp-2 sm:line-clamp-3"}`}
+                >
+                  {summary.text}
+                </p>
+              </div>
             )}
-            <FallbackBadge from={summary.fallbackFrom} lang={lang} />
           </div>
         )}
       </Link>
