@@ -11,7 +11,7 @@ import {
 import type { Localized } from "@/lib/localized";
 
 const id = () => uuid().defaultRandom().primaryKey();
-const createdAt = () => timestamp({ withTimezone: true }).defaultNow();
+const createdAt = () => timestamp({ withTimezone: true }).notNull().defaultNow();
 const localized = () => jsonb().$type<Localized>().notNull().default({});
 
 export const settings = pgTable("settings", {
@@ -50,28 +50,31 @@ export const projects = pgTable("projects", {
   createdAt: createdAt(),
 });
 
-export const projectImages = pgTable("projectImages", {
+export const projectImages = pgTable("project_images", {
   id: id(),
   projectId: uuid()
     .notNull()
     .references(() => projects.id, { onDelete: "cascade" }),
   url: text().notNull(),
-  alt: jsonb().$type<Localized>().default({}),
+  alt: jsonb().$type<Localized>().notNull().default({}),
   position: integer().notNull(),
 });
 
 export const posts = pgTable("posts", {
   id: id(),
-  slug: text().unique(),
+  slug: text().unique().notNull(),
   title: localized(),
   excerpt: localized(),
   body: localized(),
   coverUrl: text(),
-  tags: text().array().default([]),
+  tags: text().array().notNull().default([]),
   publishedAt: timestamp({ withTimezone: true }),
   draft: boolean().notNull().default(true),
   createdAt: createdAt(),
-  updatedAt: timestamp({ withTimezone: true }).defaultNow(),
+  updatedAt: timestamp({ withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });
 
 export const skills = pgTable("skills", {
@@ -83,7 +86,7 @@ export const skills = pgTable("skills", {
   position: integer().notNull(),
 });
 
-export const adminUsers = pgTable("adminUsers", {
+export const adminUsers = pgTable("admin_users", {
   id: id(),
   email: text().unique().notNull(),
   passwordHash: text().notNull(),
@@ -91,17 +94,19 @@ export const adminUsers = pgTable("adminUsers", {
 
 export const sessions = pgTable("sessions", {
   id: id(),
-  tokenHash: text().unique().notNull(),
-  userId: uuid().references(() => adminUsers.id, { onDelete: "cascade" }),
+  tokenHash: text().unique("sessions_token_hash_unique").notNull(),
+  userId: uuid()
+    .notNull()
+    .references(() => adminUsers.id, { onDelete: "cascade" }),
   expiresAt: timestamp({ withTimezone: true }).notNull(),
 });
 
 export const loginAttempts = pgTable(
-  "loginAttempts",
+  "login_attempts",
   {
     id: id(),
     ipHash: text().notNull(),
     createdAt: createdAt(),
   },
-  (t) => [index("loginAttempts_ipHash_createdAt_idx").on(t.ipHash, t.createdAt)],
+  (t) => [index("login_attempts_ip_hash_created_at_idx").on(t.ipHash, t.createdAt)],
 );

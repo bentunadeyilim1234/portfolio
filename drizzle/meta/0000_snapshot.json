@@ -1,11 +1,11 @@
 {
-  "id": "1668dcec-0f1a-477e-a71b-3bd40343792b",
+  "id": "d1e46119-9b42-453e-a3f0-80cb1ef9b387",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.adminUsers": {
-      "name": "adminUsers",
+    "public.admin_users": {
+      "name": "admin_users",
       "schema": "",
       "columns": {
         "id": {
@@ -21,8 +21,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "passwordHash": {
-          "name": "passwordHash",
+        "password_hash": {
+          "name": "password_hash",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -32,8 +32,8 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "adminUsers_email_unique": {
-          "name": "adminUsers_email_unique",
+        "admin_users_email_unique": {
+          "name": "admin_users_email_unique",
           "nullsNotDistinct": false,
           "columns": [
             "email"
@@ -87,11 +87,11 @@
           "notNull": true,
           "default": "'{}'::jsonb"
         },
-        "createdAt": {
-          "name": "createdAt",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "now()"
         }
       },
@@ -125,8 +125,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.loginAttempts": {
-      "name": "loginAttempts",
+    "public.login_attempts": {
+      "name": "login_attempts",
       "schema": "",
       "columns": {
         "id": {
@@ -136,32 +136,32 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "ipHash": {
-          "name": "ipHash",
+        "ip_hash": {
+          "name": "ip_hash",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "createdAt": {
-          "name": "createdAt",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "now()"
         }
       },
       "indexes": {
-        "loginAttempts_ipHash_createdAt_idx": {
-          "name": "loginAttempts_ipHash_createdAt_idx",
+        "login_attempts_ip_hash_created_at_idx": {
+          "name": "login_attempts_ip_hash_created_at_idx",
           "columns": [
             {
-              "expression": "ipHash",
+              "expression": "ip_hash",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
             },
             {
-              "expression": "createdAt",
+              "expression": "created_at",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -195,7 +195,7 @@
           "name": "slug",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "title": {
           "name": "title",
@@ -218,8 +218,8 @@
           "notNull": true,
           "default": "'{}'::jsonb"
         },
-        "coverUrl": {
-          "name": "coverUrl",
+        "cover_url": {
+          "name": "cover_url",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -228,11 +228,11 @@
           "name": "tags",
           "type": "text[]",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "'{}'"
         },
-        "publishedAt": {
-          "name": "publishedAt",
+        "published_at": {
+          "name": "published_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
@@ -244,18 +244,18 @@
           "notNull": true,
           "default": true
         },
-        "createdAt": {
-          "name": "createdAt",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "now()"
         },
-        "updatedAt": {
-          "name": "updatedAt",
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "now()"
         }
       },
@@ -275,8 +275,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.projectImages": {
-      "name": "projectImages",
+    "public.project_images": {
+      "name": "project_images",
       "schema": "",
       "columns": {
         "id": {
@@ -286,8 +286,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "projectId": {
-          "name": "projectId",
+        "project_id": {
+          "name": "project_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -302,7 +302,7 @@
           "name": "alt",
           "type": "jsonb",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "'{}'::jsonb"
         },
         "position": {
@@ -314,12 +314,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "projectImages_projectId_projects_id_fk": {
-          "name": "projectImages_projectId_projects_id_fk",
-          "tableFrom": "projectImages",
+        "project_images_project_id_projects_id_fk": {
+          "name": "project_images_project_id_projects_id_fk",
+          "tableFrom": "project_images",
           "tableTo": "projects",
           "columnsFrom": [
-            "projectId"
+            "project_id"
           ],
           "columnsTo": [
             "id"
@@ -385,8 +385,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "startedAt": {
-          "name": "startedAt",
+        "started_at": {
+          "name": "started_at",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -404,14 +404,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "repoUrl": {
-          "name": "repoUrl",
+        "repo_url": {
+          "name": "repo_url",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "coverImageId": {
-          "name": "coverImageId",
+        "cover_image_id": {
+          "name": "cover_image_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": false
@@ -423,11 +423,11 @@
           "notNull": true,
           "default": true
         },
-        "createdAt": {
-          "name": "createdAt",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "now()"
         }
       },
@@ -458,20 +458,20 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "tokenHash": {
-          "name": "tokenHash",
+        "token_hash": {
+          "name": "token_hash",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "userId": {
-          "name": "userId",
+        "user_id": {
+          "name": "user_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
-        "expiresAt": {
-          "name": "expiresAt",
+        "expires_at": {
+          "name": "expires_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
@@ -479,12 +479,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "sessions_userId_adminUsers_id_fk": {
-          "name": "sessions_userId_adminUsers_id_fk",
+        "sessions_user_id_admin_users_id_fk": {
+          "name": "sessions_user_id_admin_users_id_fk",
           "tableFrom": "sessions",
-          "tableTo": "adminUsers",
+          "tableTo": "admin_users",
           "columnsFrom": [
-            "userId"
+            "user_id"
           ],
           "columnsTo": [
             "id"
@@ -495,11 +495,11 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "sessions_tokenHash_unique": {
-          "name": "sessions_tokenHash_unique",
+        "sessions_token_hash_unique": {
+          "name": "sessions_token_hash_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "tokenHash"
+            "token_hash"
           ]
         }
       },
