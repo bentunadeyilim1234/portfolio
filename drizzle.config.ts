@@ -1,0 +1,15 @@
+import { defineConfig } from "drizzle-kit";
+
+try {
+  process.loadEnvFile(".env.local");
+} catch {
+  // no .env.local: rely on the ambient environment
+}
+
+export default defineConfig({
+  dialect: "postgresql",
+  schema: "./src/db/schema.ts",
+  out: "./drizzle",
+  casing: "snake_case",
+  dbCredentials: { url: process.env.DATABASE_URL! },
+});
