@@ -26,10 +26,16 @@ describe("proxy", () => {
     expect(res.cookies.get("lang")?.value).toBe("en");
   });
 
-  it.each(["/en", "/tr/blog"])("leaves %s untouched", (path) => {
-    const res = proxy(req(path));
+  it.each([
+    ["/en", "http://localhost:3000/", "en"],
+    ["/tr/blog/post?x=1", "http://localhost:3000/blog/post?x=1", "tr"],
+  ])("redirects prefixed %s to the bare path and pins the language", (path, location, lang) => {
+    const res = proxy(req(path, { cookie: "lang=de" }));
+    expect(res.status).toBe(307);
+    expect(res.headers.get("location")).toBe(location);
     expect(res.headers.get("x-middleware-rewrite")).toBeNull();
-    expect(res.headers.get("x-middleware-next")).toBe("1");
+    expect(res.cookies.get("lang")?.value).toBe(lang);
+    expect(res.cookies.get("lang")?.maxAge).toBe(31536000);
   });
 
   it("still rewrites paths that merely start with a language code", () => {
@@ -37,9 +43,16 @@ describe("proxy", () => {
     expect(res.headers.get("x-middleware-rewrite")).toBe("http://localhost:3000/en/english");
   });
 
-  it("matcher skips api, _next, admin, login and files", () => {
+  it("matcher skips api, _next, admin, login and files, on segment boundaries", () => {
     const re = new RegExp(`^${config.matcher[0]}$`);
-    for (const p of ["/api/x", "/_next/a", "/admin", "/login", "/favicon.ico"]) expect(re.test(p)).toBe(false);
-    for (const p of ["/", "/blog/post"]) expect(re.test(p)).toBe(true);
+    for (const p of ["/api", "/api/x", "/_next/a", "/admin", "/admin/x", "/login", "/favicon.ico", "/wallpaper.webp"])
+      expect(re.test(p), p).toBe(false);
+    for (const p of ["/", "/blog/post", "/administrator", "/apis", "/login-help", "/blog/next.js-16", "/en/projects"])
+      expect(re.test(p), p).toBe(true);
+  });
+
+  it.each(["/administrator", "/blog/next.js-16"])("rewrites %s", (path) => {
+    const res = proxy(req(path, { cookie: "lang=en" }));
+    expect(res.headers.get("x-middleware-rewrite")).toBe(`http://localhost:3000/en${path}`);
   });
 });

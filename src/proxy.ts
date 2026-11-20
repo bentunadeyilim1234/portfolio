@@ -1,20 +1,31 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { isLang, LANGS, resolveLang } from "@/lib/i18n";
+import { isLang, resolveLang } from "@/lib/i18n";
+
+const COOKIE = { maxAge: 60 * 60 * 24 * 365, sameSite: "lax", path: "/" } as const;
 
 export function proxy(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
-  if (LANGS.some((l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`))) return NextResponse.next();
+
+  // A visited "/en/x" redirects to "/x" and pins that language, so the toggle keeps working there.
+  // Only external requests reach this: the rewrite below does not re-enter the proxy.
+  const [, first, ...rest] = pathname.split("/");
+  if (isLang(first)) {
+    // 307, not 308: a cached permanent redirect would skip setting the cookie on later visits.
+    const res = NextResponse.redirect(new URL(`/${rest.join("/")}${search}`, req.url), 307);
+    res.cookies.set("lang", first, COOKIE);
+    return res;
+  }
 
   const cookie = req.cookies.get("lang")?.value;
   const lang = resolveLang(cookie, req.headers.get("accept-language"));
   // "/" -> "/tr", not "/tr/", so the rewrite hits the same route as a direct visit.
   const res = NextResponse.rewrite(new URL(`/${lang}${pathname === "/" ? "" : pathname}${search}`, req.url));
-  if (!isLang(cookie)) {
-    res.cookies.set("lang", lang, { maxAge: 60 * 60 * 24 * 365, sameSite: "lax", path: "/" });
-  }
+  if (!isLang(cookie)) res.cookies.set("lang", lang, COOKIE);
   return res;
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|admin|login|.*\\..*).*)"],
+  // Skips whole segments api, _next, admin, login, and files: a last segment ending in ".ext" (letters/digits only).
+  // shortcut: a page slug ending in ".abc" would be treated as a file; reject such slugs if that ever matters.
+  matcher: ["/((?!(?:api|_next|admin|login)(?:/|$))(?!.*\\.\\w+$).*)"],
 };
