@@ -1,72 +1,74 @@
 /* Liquid glass surface. Tier is set on <html data-glass> by glassTierScript before paint.
    No data-glass (JS off) falls back to the blur tier below; no backdrop support falls back to solid. */
-.glass {
-  position: relative;
-  isolation: isolate;
-  border-radius: 28px;
-  color: var(--fg);
-  background: var(--glass-tint);
-  -webkit-backdrop-filter: blur(18px) saturate(1.6);
-  backdrop-filter: blur(18px) saturate(1.6);
-  box-shadow:
-    inset 0 1px 0 0 var(--glass-specular),
-    inset 0 -1px 1px 0 rgb(255 255 255 / 0.08),
-    0 1px 2px hsl(var(--glass-shadow-color) / 0.08),
-    0 8px 24px -6px hsl(var(--glass-shadow-color) / 0.16),
-    0 24px 56px -16px hsl(var(--glass-shadow-color) / 0.24);
-}
-
-/* Inner specular sheen: bright along the top edge, fading out before the middle. */
-.glass::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  pointer-events: none;
-  background:
-    radial-gradient(120% 70% at 50% -20%, rgb(255 255 255 / 0.32), transparent 60%),
-    linear-gradient(180deg, rgb(255 255 255 / 0.14), transparent 35%);
-}
-
-/* 1px rim: brighter at the top-left light source, dimmer at the bottom. */
-.glass::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  pointer-events: none;
-  background: linear-gradient(160deg, var(--glass-rim-top), var(--glass-rim-bottom) 45%, var(--glass-rim-bottom) 70%, var(--glass-rim-top));
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-}
-
-.dark .glass::before {
-  background:
-    radial-gradient(120% 70% at 50% -20%, rgb(255 255 255 / 0.12), transparent 60%),
-    linear-gradient(180deg, rgb(255 255 255 / 0.05), transparent 35%);
-}
-
-/* Chromium + capable device: SVG refraction (#lg-refract in GlassFilter) bends the backdrop at the edges. */
-[data-glass="refract"] .glass {
-  backdrop-filter: url(#lg-refract) blur(6px) saturate(1.6);
-}
-
-[data-glass="blur"] .glass {
-  -webkit-backdrop-filter: blur(18px) saturate(1.6);
-  backdrop-filter: blur(18px) saturate(1.6);
-}
-
-[data-glass="solid"] .glass {
-  background: var(--glass-solid);
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+@layer components {
   .glass {
+    position: relative;
+    isolation: isolate;
+    border-radius: 28px;
+    color: var(--fg);
+    background: var(--glass-tint);
+    -webkit-backdrop-filter: blur(18px) saturate(1.6);
+    backdrop-filter: blur(18px) saturate(1.6);
+    box-shadow:
+      inset 0 1px 0 0 var(--glass-specular),
+      inset 0 -1px 1px 0 rgb(255 255 255 / 0.08),
+      0 1px 2px hsl(var(--glass-shadow-color) / 0.08),
+      0 8px 24px -6px hsl(var(--glass-shadow-color) / 0.16),
+      0 24px 56px -16px hsl(var(--glass-shadow-color) / 0.24);
+  }
+
+  /* Inner specular sheen: bright along the top edge, fading out before the middle. */
+  .glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+      radial-gradient(120% 70% at 50% -20%, rgb(255 255 255 / 0.32), transparent 60%),
+      linear-gradient(180deg, rgb(255 255 255 / 0.14), transparent 35%);
+  }
+
+  /* 1px rim: brighter at the top-left light source, dimmer at the bottom. */
+  .glass::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    pointer-events: none;
+    background: linear-gradient(160deg, var(--glass-rim-top), var(--glass-rim-bottom) 45%, var(--glass-rim-bottom) 70%, var(--glass-rim-top));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  }
+
+  .dark .glass::before {
+    background:
+      radial-gradient(120% 70% at 50% -20%, rgb(255 255 255 / 0.12), transparent 60%),
+      linear-gradient(180deg, rgb(255 255 255 / 0.05), transparent 35%);
+  }
+
+  /* Chromium + capable device: SVG refraction (#lg-refract in GlassFilter) bends the backdrop at the edges. */
+  [data-glass="refract"] .glass {
+    backdrop-filter: url(#lg-refract) blur(6px) saturate(1.6);
+  }
+
+  [data-glass="blur"] .glass {
+    -webkit-backdrop-filter: blur(18px) saturate(1.6);
+    backdrop-filter: blur(18px) saturate(1.6);
+  }
+
+  [data-glass="solid"] .glass {
     background: var(--glass-solid);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass {
+      background: var(--glass-solid);
+    }
   }
 }
