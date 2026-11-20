@@ -38,6 +38,20 @@ describe("proxy", () => {
     expect(res.cookies.get("lang")?.maxAge).toBe(31536000);
   });
 
+  it.each([
+    ["/en//evil.com", "/evil.com"],
+    ["/en///evil.com/x", "/evil.com/x"],
+    ["/tr/%2F%2Fevil.com", "/%2F%2Fevil.com"],
+    ["/en/\\evil.com", "/evil.com"],
+    ["/en/projects?x=1", "/projects?x=1"],
+  ])("keeps the redirect for %s on the same origin", (path, target) => {
+    const location = proxy(req(path)).headers.get("location")!;
+    expect(location.startsWith("//")).toBe(false);
+    const url = new URL(location, "http://localhost:3000");
+    expect(url.origin).toBe("http://localhost:3000");
+    expect(url.pathname + url.search).toBe(target);
+  });
+
   it("still rewrites paths that merely start with a language code", () => {
     const res = proxy(req("/english"));
     expect(res.headers.get("x-middleware-rewrite")).toBe("http://localhost:3000/en/english");

@@ -11,7 +11,10 @@ export function proxy(req: NextRequest) {
   const [, first, ...rest] = pathname.split("/");
   if (isLang(first)) {
     // 307, not 308: a cached permanent redirect would skip setting the cookie on later visits.
-    const res = NextResponse.redirect(new URL(`/${rest.join("/")}${search}`, req.url), 307);
+    // Strip extra leading slashes: Next sends same-origin Locations relative, and "//evil.com" would leave the site.
+    const url = req.nextUrl.clone();
+    url.pathname = "/" + rest.join("/").replace(/^[/\\]+/, "");
+    const res = NextResponse.redirect(url, 307);
     res.cookies.set("lang", first, COOKIE);
     return res;
   }
