@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { and, asc, desc, eq, inArray, isNotNull, lte } from "drizzle-orm";
 import { db } from "@/db";
 import { blocks, posts, projectImages, projects, settings, skills } from "@/db/schema";
@@ -21,7 +22,8 @@ export async function getPageBlocks(page: PageKey): Promise<Block[]> {
 
 const DEFAULT_SETTINGS: SiteSettings = { nav: [], email: "", ownerName: "", socials: [] };
 
-export async function getSettings(): Promise<SiteSettings> {
+// cache(): the layout and a page's blocks both read settings within one request.
+export const getSettings = cache(async (): Promise<SiteSettings> => {
   const rows = await db.select().from(settings);
   const v = Object.fromEntries(rows.map((r) => [r.key, r.value]));
   // Admin-written JSON: anything of the wrong shape falls back to the default.
@@ -31,7 +33,7 @@ export async function getSettings(): Promise<SiteSettings> {
     ownerName: typeof v.ownerName === "string" ? v.ownerName : DEFAULT_SETTINGS.ownerName,
     socials: Array.isArray(v.socials) ? (v.socials as SiteSettings["socials"]) : DEFAULT_SETTINGS.socials,
   };
-}
+});
 
 async function withImages(rows: Project[]): Promise<ProjectWithImages[]> {
   if (rows.length === 0) return [];

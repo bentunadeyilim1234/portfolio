@@ -16,6 +16,7 @@
   --glass-rim-bottom: rgb(255 255 255 / 0.25);
   --glass-shadow-color: 250 30% 20%;
   --glass-hover: rgb(255 255 255 / 0.35);
+  --glass-drop: rgb(255 255 255 / 0.62);
 }
 
 .dark {
@@ -32,6 +33,7 @@
   --glass-rim-bottom: rgb(255 255 255 / 0.06);
   --glass-shadow-color: 250 40% 2%;
   --glass-hover: rgb(255 255 255 / 0.1);
+  --glass-drop: rgb(255 255 255 / 0.14);
 }
 
 @theme {

@@ -25,7 +25,7 @@ export function ThemeToggle({ lang }: { lang: Lang }) {
       onClick={() => setTheme(NEXT[mode])}
       aria-label={`${t.nav.theme}: ${t.theme[mode]}`}
       title={`${t.nav.theme}: ${t.theme[mode]}`}
-      className="grid size-10 place-items-center rounded-full text-fg transition-colors hover:bg-[var(--glass-hover)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current"
+      className="grid size-11 place-items-center rounded-full text-fg transition-colors hover:bg-[var(--glass-hover)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current"
     >
       <Icon aria-hidden className="size-5" strokeWidth={1.75} />
     </button>

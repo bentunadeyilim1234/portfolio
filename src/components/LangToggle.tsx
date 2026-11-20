@@ -15,7 +15,7 @@ export function LangToggle({ lang }: { lang: Lang }) {
       }}
       aria-label={`${dict(lang).nav.lang}: ${next.toUpperCase()}`}
       lang={next}
-      className="grid h-10 min-w-10 place-items-center rounded-full px-2 text-sm font-semibold tracking-wide text-fg transition-colors hover:bg-[var(--glass-hover)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current"
+      className="grid h-11 min-w-11 place-items-center rounded-full px-2 text-sm font-semibold tracking-wide text-fg transition-colors hover:bg-[var(--glass-hover)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current"
     >
       {next.toUpperCase()}
     </button>

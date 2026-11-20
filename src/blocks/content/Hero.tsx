@@ -3,6 +3,7 @@ import { FallbackBadge } from "@/components/FallbackBadge";
 import { Glass } from "@/components/glass/Glass";
 import type { Lang } from "@/lib/i18n";
 import { pickLocalized, type Localized } from "@/lib/localized";
+import { pageHref } from "@/lib/nav";
 import type { PageKey } from "../types";
 
 export type HeroConfig = { title: Localized; tagline: Localized; ctas?: { label: Localized; page: PageKey }[] };
@@ -32,7 +33,7 @@ export function Hero({ config, lang }: { config: HeroConfig; lang: Lang }) {
             return (
               <li key={i} className="flex items-center gap-2">
                 <Link
-                  href={c.page === "home" ? "/" : `/${c.page}`}
+                  href={pageHref(c.page)}
                   className={`inline-flex rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${FOCUS} ${
                     // First CTA is the primary action: solid, inverted.
                     i === 0
