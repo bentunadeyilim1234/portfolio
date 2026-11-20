@@ -17,7 +17,8 @@ import "@/components/markdown.css";
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin", "latin-ext"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin", "latin-ext"] });
 
-export const metadata: Metadata = { title: "Ali Tuna Baylan" };
+// Pages set a plain title; the template appends the site name.
+export const metadata: Metadata = { title: { default: "Ali Tuna Baylan", template: "%s — Ali Tuna Baylan" } };
 
 export const dynamicParams = false;
 

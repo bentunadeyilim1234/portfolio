@@ -49,14 +49,15 @@ export async function getPublishedProjects(): Promise<ProjectWithImages[]> {
   return withImages(await db.select().from(projects).where(eq(projects.published, true)).orderBy(desc(projects.createdAt)));
 }
 
-export async function getProjectBySlug(slug: string): Promise<ProjectWithImages | null> {
+// cache(): generateMetadata and the page both read the same record within one request.
+export const getProjectBySlug = cache(async (slug: string): Promise<ProjectWithImages | null> => {
   const rows = await db
     .select()
     .from(projects)
     .where(and(eq(projects.slug, slug), eq(projects.published, true)))
     .limit(1);
   return (await withImages(rows))[0] ?? null;
-}
+});
 
 const isPublic = () => and(eq(posts.draft, false), isNotNull(posts.publishedAt), lte(posts.publishedAt, new Date()));
 
@@ -75,10 +76,10 @@ export async function getPublishedPosts(): Promise<PostSummary[]> {
     .orderBy(desc(posts.publishedAt));
 }
 
-export async function getPostBySlug(slug: string): Promise<Post | null> {
+export const getPostBySlug = cache(async (slug: string): Promise<Post | null> => {
   const rows = await db.select().from(posts).where(and(eq(posts.slug, slug), isPublic())).limit(1);
   return rows[0] ?? null;
-}
+});
 
 export async function getSkills(): Promise<Skill[]> {
   return db.select().from(skills).orderBy(asc(skills.position));
